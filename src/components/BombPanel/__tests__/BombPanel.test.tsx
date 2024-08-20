@@ -61,7 +61,11 @@ describe("BombPanel Component", () => {
       screen.getByRole("list", { name: /list of bomb/i })
     ).toBeInTheDocument();
 
-    expect(screen.getByRole("button", { name: "Explode" })).toBeInTheDocument();
+    const triggerButton = screen.getByRole("button", {
+      name: "Explode",
+    });
+    expect(triggerButton).toBeInTheDocument();
+    expect(triggerButton).not.toBeDisabled();
   });
 
   it("should allow user to trigger bomb(s)", async () => {
@@ -81,6 +85,25 @@ describe("BombPanel Component", () => {
     expect(triggerButton).toBeInTheDocument();
     await userEvent.click(triggerButton);
     expect(mockedStartTimerFn).toHaveBeenCalledOnce();
+  });
+
+  it("should disable the button after triggerred", () => {
+    vi.mocked(useBombs).mockReturnValueOnce({
+      bombs: mockedBombList,
+      explodedCount: 3,
+      isStartTimer: true,
+    });
+    vi.mocked(useActions).mockReturnValue({
+      startTimer: mockedStartTimerFn,
+      bombExploded: vi.fn,
+    });
+
+    render(<BombPanel />);
+
+    const triggerButton = screen.getByRole("button", {
+      name: "Waiting to explode...",
+    });
+    expect(triggerButton).toBeDisabled();
   });
 
   it("should show bombs states via button correctly", () => {
