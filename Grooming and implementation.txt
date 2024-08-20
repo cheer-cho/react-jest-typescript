@@ -1,0 +1,123 @@
+﻿Grooming and implementation
+
+
+1. First step to get things on the page first, I use approach to store application state on the BobPanel component (Lift state up to the top, (this will result in prop drilling on the List rendering component))
+2. Implement 4 components to represent the BombPanel
+   1. App Component
+   2. BombPanel Component
+   3. BombList Component
+   4. BombItem Component
+3. App Component
+https://github.com/cheer-cho/react-jest-typescript/commit/5fd5ec6be7b6596eec48b151c8cffc6272ea76b1#diff-26ad4b834941d9b19ebf9db8082bd202aaf72ea0ddea85f5a8a0cb3c729cc6f2R1
+   1. Randomly generate the bomb objects in array pass the data into BobPanel as a prop
+   4. BombPanel Component
+https://github.com/cheer-cho/react-jest-typescript/commit/5fd5ec6be7b6596eec48b151c8cffc6272ea76b1#diff-8d3402f7c7a4abb751b9aeb5193ea240cff0abdf8ae6a67deabd380ae5fdb11eR1
+      1. Responsible for handle state and actions
+      1. States
+      1. bomb; Array store information for bombs
+      2. isStartTimer; Boolean store information to trigger timer to start
+      3. explodedCount; Number store information on how many bomb is exploded
+      2. Action Handlers
+      1. handleTriggleBomb; set isStartTimer to true
+      2. handleBombExploded; increase explodedCount by 1
+      2. Render BombList and Button
+      1. Pass bombs, isStartTimer, onBombExploded into BombList Component
+      2. Button; register event to trigger the handleTriggleBomb on click
+      5. BombList Component
+https://github.com/cheer-cho/react-jest-typescript/commit/5fd5ec6be7b6596eec48b151c8cffc6272ea76b1#diff-e01e3e57cf61b624705c533b05604ae1eac5a7af22eda2e9bf6b2ffee75dc272R1
+         1. Responsible to render BombItems
+         1. Loop through bombList prop and render BombItem for each bomb
+         2. Passing bomb object, isStartTimer, handleBombExploded to BombItem
+         6. BombItem Component
+https://github.com/cheer-cho/react-jest-typescript/commit/5fd5ec6be7b6596eec48b151c8cffc6272ea76b1#diff-401a191d701cf2021faf27425590357a6c6708c7e7ca2895119aae753716a6b2R1
+            1. Responsible to
+            1. Render bomb information
+            1. image
+            2. name
+            3. Timer (timeLeft countdown)
+            2. Register interval to count down the timer after the bomb is triggered (isStartCountDown is true)
+            3. Call handleBombExploded when the timer reach 0
+            2. Implement timeLeft state to store how much time left before exploded (in second)
+            3. Implement useEffect to start time interval to trigger every 1 second to reduce the timer, it is cleared once timer reached 0 or component is unmounted
+            7. Now I pull out the Button and ListItem to be a reusable component
+            1. Button https://github.com/cheer-cho/react-jest-typescript/commit/5fd5ec6be7b6596eec48b151c8cffc6272ea76b1#diff-0eeed8ba31c7d1e05ada6484e3d0808cac18aac7716ef2b1b79cfc08cf738e9cR1
+            2. ListItem
+https://github.com/cheer-cho/react-jest-typescript/commit/5fd5ec6be7b6596eec48b151c8cffc6272ea76b1#diff-28358ce37ae2723c45c53d16356e914f5d0ae0d68830f62d69dce80fafc9785cR1
+
+
+
+
+________________
+
+
+Update to use Context to solve prop drilling
+
+
+               1. I can see that the list doesn’t have to know the isStartTimer and explodedCount, so context should be used to resolve this, and it is easier to pull the data into the component
+               2. Each component carry timeInterval function should not be a good idea for performance if we have a lot of bombs, so lets context handle it and store timer in context
+
+
+So I implement context with useContext and useReducer
+https://github.com/cheer-cho/react-jest-typescript/blob/main/src/contexts/BombContext.tsx#L1
+
+
+               1. Implement state structure to have
+               1. bombs; array of bomb
+               2. isStartTimer; boolean
+               3. explodedCount; number (count exploded bomb)
+               4. timer: number; increasing after start timer
+               2. Implement 3 actions
+https://github.com/cheer-cho/react-jest-typescript/blob/main/src/contexts/BombContext.tsx#L31
+                  1. START_TIMER
+                  2. BOMB_EXPLODED
+                  3. TIMER_INCREASE
+                  3. Implement reducer to handle these action and update state correspondingly
+                  1. START_TIMER
+Set isStartTimer to true
+                  2. BOMB_EXPLODED
+Increase explodedCount by 1
+                  3. TIMER_INCREASED
+Increase timer by 1
+                     4. Create custom hook to be action trigger (just a util hook for ease of maintain, component don’t have to call dispatch by itself)
+                     1. startTimer; dispatch START_TIMER
+                     2. bombExploded; dispatch BOMB_EXPLODED
+                     3. increaseTimer; dispatch TIMER_INCREASED
+                     4. Register useEffect; to create time interval when isStartTimer is true
+                     1. Increase timer by one every second
+                     2. Keep checking every second if the all bombs are exploded;
+                     * clear interval
+                     * stop increasing timer
+                     5. Create context from initstate which provides
+                     1. State (bomb, isStartTimer, explodedCount, timer)
+                     2. startTimer function
+                     3. bombExploded function
+                     6. Create ContextProvider register value to bombReducer as a initial state
+                     7. Create hooks to pull out piece of data and function from context as needed
+                     1. Actions
+                     1. startTimer function
+                     2. bombExplode function
+                     2. useBombs
+                     1. bombs
+                     2. explodedCount
+                     3. isStartTimer
+                     3. useTimer
+                     1. Timer
+                     8. Update Components correspondingly
+https://github.com/cheer-cho/react-jest-typescript
+                     9. Wrapp App under context provider
+Passing initstate along with the randomly generated bomb list into the context
+                     10. BombPanel
+                        1. Pull out necessary piece of state and action
+                        1. State; bombs, explodedCount, isStartTimer
+                        2. Action; startTimer
+                        2. Call startTimer on button clicked
+                        3. Conditional render button label based on bombs state
+                        4. Pass bombs into BombList
+                        11. BombList
+                        1. Render BombItem and pass each bomb object into BombItem
+                        12. BombItem
+                        1. Pull out necessary piece of state and action
+                        1. State: timer 
+                        2. Action: bombExploded
+                        2. Call bombExploded when timer is equal initialTime
+                        3. Conditional render timer or “Explode”
