@@ -14,6 +14,7 @@ const BombList = ({ bombList }: BombList) => {
       {bombList.map((bomb, index) => (
         <li
           key={bomb.name}
+          aria-label={bomb.name}
           style={{ marginBottom: index === bombList.length - 1 ? "0" : "16px" }}
         >
           <BombItem bomb={bomb} />

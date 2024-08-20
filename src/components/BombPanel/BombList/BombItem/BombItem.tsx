@@ -25,7 +25,7 @@ const BombItem = ({ bomb: { initialTime, name } }: BombItemProps) => {
         <h2 style={{ marginLeft: "16px" }}>{name}</h2>
       </div>
       <div>
-        <span>
+        <span data-testid="timer">
           {/* conditional render time left if time > 0 or Exploded if time === 0*/}
           {timer < initialTime ? (
             `${initialTime - timer} seconds`

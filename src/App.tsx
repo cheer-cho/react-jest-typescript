@@ -1,8 +1,9 @@
 import "./styles.css";
-import { Bomb } from "types";
-import BombPanel from "./components/BombPanel";
+import { Bomb } from "@/types";
+import BombPanel from "@/components/BombPanel";
+import { BombProvider, initState } from "@/contexts/BoContext";
 
-const randomNumberOfBombs = Math.floor(Math.random() * 4) + 2;
+const randomNumberOfBombs = Math.floor(Math.random() * 7) + 4;
 
 const mockedBombs: Bomb[] = [];
 for (let index = 0; index < randomNumberOfBombs; index += 1) {
@@ -13,5 +14,23 @@ for (let index = 0; index < randomNumberOfBombs; index += 1) {
 }
 
 export default function App() {
-  return <BombPanel allBombs={mockedBombs} />;
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        paddingTop: "40px",
+        paddingBottom: "40px",
+      }}
+    >
+      <BombProvider
+        bombs={mockedBombs}
+        explodedCount={initState.explodedCount}
+        isStartTimer={initState.isStartTimer}
+        timer={initState.timer}
+      >
+        <BombPanel />
+      </BombProvider>
+    </div>
+  );
 }
