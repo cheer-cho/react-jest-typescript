@@ -1,6 +1,6 @@
 import { getAllByRole, render, screen } from "@testing-library/react";
-import BombList from "../BombList";
-import { Bomb } from "types";
+import { Bomb } from "@/types";
+import BombList from "..";
 
 const mockedBombList: Bomb[] = [
   {
@@ -27,13 +27,7 @@ const mockedBombList: Bomb[] = [
 
 describe("BombList Component", () => {
   it("should correctly render a list of bomb", () => {
-    render(
-      <BombList
-        bombList={mockedBombList}
-        isStartTimer={false}
-        onBombExploded={() => {}}
-      />
-    );
+    render(<BombList bombList={mockedBombList} />);
 
     const bombList = screen.getByRole("list", { name: /list of bomb/i });
     expect(bombList).toBeInTheDocument();

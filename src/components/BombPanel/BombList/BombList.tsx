@@ -1,27 +1,22 @@
-import { Bomb } from "types";
-import BombItem from "./BombItem";
 import React from "react";
+
+import { Bomb } from "@/types";
+
+import BombItem from "./BombItem";
 
 type BombList = {
   bombList: Bomb[];
-  isStartTimer: boolean;
-  onBombExploded: () => void;
 };
 
-const BombList = ({
-  bombList,
-  isStartTimer,
-  onBombExploded: handleBombExploded,
-}: BombList) => {
+const BombList = ({ bombList }: BombList) => {
   return (
     <ul aria-label="list of bomb" style={{ listStyle: "none" }}>
-      {bombList.map((bomb) => (
-        <li key={bomb.name} style={{ marginBottom: "16px" }}>
-          <BombItem
-            bomb={bomb}
-            isStartCountDown={isStartTimer}
-            onBombExploded={handleBombExploded}
-          />
+      {bombList.map((bomb, index) => (
+        <li
+          key={bomb.name}
+          style={{ marginBottom: index === bombList.length - 1 ? "0" : "16px" }}
+        >
+          <BombItem bomb={bomb} />
         </li>
       ))}
     </ul>

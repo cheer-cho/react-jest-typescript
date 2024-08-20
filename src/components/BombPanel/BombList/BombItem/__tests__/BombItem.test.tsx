@@ -1,5 +1,5 @@
 import { act, render, screen } from "@testing-library/react";
-import BombItem from "../BombItem";
+import BombItem from "..";
 import { useActions, useTimer } from "@/contexts/BoContext";
 
 // mock Context
