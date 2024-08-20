@@ -1,14 +1,14 @@
 import { Bomb } from "@/types";
 import { render, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
-import { BombContext, useActions, useBombs } from "@/contexts/BoContext";
+import { BombContext, useActions, useBombs } from "@/contexts/BombContext";
 
 import BombPanel from "..";
 
 // Partially mock the BoContext module
-vi.mock("@/contexts/BoContext", async () => {
+vi.mock("@/contexts/BombContext", async () => {
   const originalModule = await vi.importActual<typeof BombContext>(
-    "@/contexts/BoContext"
+    "@/contexts/BombContext"
   );
 
   return {

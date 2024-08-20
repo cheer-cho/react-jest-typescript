@@ -1,7 +1,7 @@
 import "./styles.css";
 import { Bomb } from "@/types";
 import BombPanel from "@/components/BombPanel";
-import { BombProvider, initState } from "@/contexts/BoContext";
+import { BombProvider, initState } from "@/contexts/BombContext";
 
 const randomNumberOfBombs = Math.floor(Math.random() * 7) + 4;
 

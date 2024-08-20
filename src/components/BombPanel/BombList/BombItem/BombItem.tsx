@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { Bomb } from "@/types";
 import BombImage from "@/assets/images/bomb-60x60.png";
 import ListItem from "@/components/shared/ListItem";
-import { useActions, useTimer } from "@/contexts/BoContext";
+import { useActions, useTimer } from "@/contexts/BombContext";
 
 type BombItemProps = {
   bomb: Bomb;

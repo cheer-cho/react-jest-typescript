@@ -1,7 +1,7 @@
 import { Bomb } from "@/types";
 import BombList from "@/components/BombPanel/BombList";
 import Button from "@/components/shared/Button";
-import { useActions, useBombs } from "@/contexts/BoContext";
+import { useActions, useBombs } from "@/contexts/BombContext";
 
 const BombPanel = () => {
   const { bombs, explodedCount, isStartTimer } = useBombs();
