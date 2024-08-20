@@ -8,6 +8,7 @@ type BombList = {
   bombList: Bomb[];
 };
 
+// render list of BombItem
 const BombList = ({ bombList }: BombList) => {
   return (
     <ul aria-label="list of bomb" style={{ listStyle: "none" }}>

@@ -9,6 +9,11 @@ type BombItemProps = {
   bomb: Bomb;
 };
 
+/**
+ * BombItem Component
+ *
+ * render Bomb item
+ *  */
 const BombItem = ({ bomb: { initialTime, name } }: BombItemProps) => {
   const { timer } = useTimer();
   const { bombExploded } = useActions();
