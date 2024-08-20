@@ -1,6 +1,6 @@
-import { ReactElement } from "react";
+import { ReactNode } from "react";
 
-const ListItem = ({ children }: { children: ReactElement }) => {
+const ListItem = ({ children }: { children: ReactNode }) => {
   return (
     <div
       style={{
@@ -11,6 +11,7 @@ const ListItem = ({ children }: { children: ReactElement }) => {
         height: "100px",
         border: "1px black solid",
         padding: "8px 20px",
+        backgroundColor: "lightgray",
       }}
     >
       {children}

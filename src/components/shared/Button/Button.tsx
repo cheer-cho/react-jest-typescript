@@ -15,13 +15,14 @@ const buttonColors = {
   },
 };
 
-const Button = ({ children, color, ...rest }: ButtonProps) => {
+const Button = ({ children, color, style, ...rest }: ButtonProps) => {
   const styles = {
     padding: "24px",
     width: "200px",
     cursor: "pointer",
     ...(color === "primary" && buttonColors.primary),
     ...(color === "error" && buttonColors.error),
+    ...style,
   };
   return (
     <button style={styles} {...rest}>
