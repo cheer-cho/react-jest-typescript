@@ -1,16 +1,22 @@
-import { Bomb } from "types";
-import BombPanel from "../BombPanel";
-import {
-  fireEvent,
-  logRoles,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { Bomb } from "@/types";
+import { render, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
-import { act } from "react";
+import { BombContext, useActions, useBombs } from "@/contexts/BoContext";
 
-vi.useFakeTimers();
+import BombPanel from "..";
+
+// Partially mock the BoContext module
+vi.mock("@/contexts/BoContext", async () => {
+  const originalModule = await vi.importActual<typeof BombContext>(
+    "@/contexts/BoContext"
+  );
+
+  return {
+    ...originalModule,
+    useActions: vi.fn(),
+    useBombs: vi.fn(),
+  };
+});
 
 const mockedBombList: Bomb[] = [
   {
@@ -35,9 +41,21 @@ const mockedBombList: Bomb[] = [
   },
 ];
 
-describe("App Component", () => {
+const mockedStartTimerFn = vi.fn();
+
+describe("BombPanel Component", () => {
   it("should render a bomb list and a trigger button", () => {
-    render(<BombPanel allBombs={mockedBombList} />);
+    vi.mocked(useBombs).mockReturnValueOnce({
+      bombs: mockedBombList,
+      explodedCount: 0,
+      isStartTimer: false,
+    });
+    vi.mocked(useActions).mockReturnValue({
+      startTimer: vi.fn,
+      bombExploded: vi.fn,
+    });
+
+    render(<BombPanel />);
 
     expect(
       screen.getByRole("list", { name: /list of bomb/i })
@@ -47,33 +65,51 @@ describe("App Component", () => {
   });
 
   it("should allow user to trigger bomb(s)", async () => {
-    render(<BombPanel allBombs={mockedBombList} />);
+    vi.mocked(useBombs).mockReturnValueOnce({
+      bombs: mockedBombList,
+      explodedCount: 0,
+      isStartTimer: false,
+    });
+    vi.mocked(useActions).mockReturnValue({
+      startTimer: mockedStartTimerFn,
+      bombExploded: vi.fn,
+    });
+
+    render(<BombPanel />);
 
     const triggerButton = screen.getByRole("button", { name: "Explode" });
     expect(triggerButton).toBeInTheDocument();
-    fireEvent.click(triggerButton);
-
-    const updatedButton = screen.getByRole("button", {
-      name: "Waiting to explode...",
-    });
-    expect(updatedButton).toBeInTheDocument();
+    await userEvent.click(triggerButton);
+    expect(mockedStartTimerFn).toHaveBeenCalledOnce();
   });
 
   it("should show bombs states via button correctly", () => {
-    render(<BombPanel allBombs={mockedBombList} />);
-
-    const triggerButton = screen.getByRole("button", { name: "Explode" });
-    expect(triggerButton).toBeInTheDocument();
-    fireEvent.click(triggerButton);
-
-    act(() => {
-      vi.advanceTimersByTime(10000);
+    vi.mocked(useBombs).mockReturnValueOnce({
+      bombs: mockedBombList,
+      explodedCount: 3,
+      isStartTimer: true,
     });
-    expect(triggerButton).toHaveTextContent("Waiting to explode...");
-
-    act(() => {
-      vi.advanceTimersByTime(10000);
+    vi.mocked(useActions).mockReturnValue({
+      startTimer: mockedStartTimerFn,
+      bombExploded: vi.fn,
     });
-    expect(triggerButton).toHaveTextContent("All bombs exploded");
+
+    render(<BombPanel />);
+
+    expect(
+      screen.getByRole("button", { name: "Waiting to explode..." })
+    ).toBeInTheDocument();
+
+    vi.mocked(useBombs).mockReturnValueOnce({
+      bombs: mockedBombList,
+      explodedCount: 5,
+      isStartTimer: true,
+    });
+
+    render(<BombPanel />);
+
+    expect(
+      screen.getByRole("button", { name: "All bombs exploded" })
+    ).toBeInTheDocument();
   });
 });

@@ -1,29 +1,13 @@
-import { useCallback, useState } from "react";
-import { Bomb } from "types";
-import BombList from "./BombList";
-import Button from "../shared/Button";
+import { Bomb } from "@/types";
+import BombList from "@/components/BombPanel/BombList";
+import Button from "@/components/shared/Button";
+import { useActions, useBombs } from "@/contexts/BoContext";
 
-type BombPanelProps = {
-  allBombs: Bomb[];
-};
-
-const BombPanel = ({ allBombs }: BombPanelProps) => {
-  const [bombs, _] = useState<Bomb[]>(allBombs);
-  const [isStartTimer, setIsStartTimer] = useState<boolean>(false);
-  const [explodedCount, setExplodedCount] = useState<number>(0);
+const BombPanel = () => {
+  const { bombs, explodedCount, isStartTimer } = useBombs();
+  const { startTimer } = useActions();
   const isDisabled = isStartTimer && explodedCount < bombs.length;
   const isAllBombExploded = isStartTimer && explodedCount === bombs.length;
-
-  const handleTriggleBomb = useCallback(() => {
-    if (isDisabled) {
-      return;
-    }
-    setIsStartTimer(true);
-  }, []);
-
-  const handleBombExploded = useCallback(() => {
-    setExplodedCount((prevCount) => prevCount + 1);
-  }, []);
 
   let buttonLabel = "Explode";
   if (isStartTimer) {
@@ -36,22 +20,19 @@ const BombPanel = ({ allBombs }: BombPanelProps) => {
   return (
     <div
       style={{
-        paddingTop: "16px",
-        paddingBottom: "40px",
+        padding: "16px 16px 40px 16px",
+        border: "1px #000 solid",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
       }}
     >
-      <BombList
-        bombList={bombs}
-        isStartTimer={isStartTimer}
-        onBombExploded={handleBombExploded}
-      />
+      <BombList bombList={bombs} />
       <Button
         color={`${isAllBombExploded ? "error" : "primary"}`}
         disabled={isDisabled}
-        onClick={handleTriggleBomb}
+        onClick={startTimer}
+        style={{ marginTop: "40px" }}
       >
         {buttonLabel}
       </Button>
