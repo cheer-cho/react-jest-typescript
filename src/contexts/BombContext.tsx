@@ -1,5 +1,4 @@
 import {
-  Children,
   ReactElement,
   ReactNode,
   createContext,
@@ -87,6 +86,7 @@ const useBombReducer = (initState: StateType) => {
       const intervalId = setInterval(() => {
         if (state.explodedCount === state.bombs.length) {
           clearInterval(intervalId);
+          return;
         }
         increaseTimer();
       }, 1000);
