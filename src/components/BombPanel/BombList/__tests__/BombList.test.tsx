@@ -1,5 +1,6 @@
 import { getAllByRole, render, screen } from "@testing-library/react";
 import { Bomb } from "@/types";
+
 import BombList from "..";
 
 const mockedBombList: Bomb[] = [

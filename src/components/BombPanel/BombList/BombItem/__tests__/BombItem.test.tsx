@@ -1,6 +1,7 @@
-import { act, render, screen } from "@testing-library/react";
-import BombItem from "..";
+import { render, screen } from "@testing-library/react";
 import { useActions, useTimer } from "@/contexts/BoContext";
+
+import BombItem from "..";
 
 // mock Context
 vi.mock("@/contexts/BoContext", () => ({
